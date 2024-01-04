@@ -12,6 +12,8 @@ export const fetchItems = async (query, page) => {
       params: {
         key: API_KEY,
         q: dividedQuery,
+        image_type: 'photo',
+        orientation: 'horizontal',
         page: page,
         per_page: 12,
       },

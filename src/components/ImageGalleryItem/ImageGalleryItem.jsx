@@ -1,7 +1,6 @@
 import { Component } from 'react';
-
-import { ImageGalleryItemImage } from './ImageGalleryItem.styled';
 import Modal from 'react-modal';
+import { ImageGalleryItemImage } from './ImageGalleryItem.styled';
 
 const customStyles = {
   content: {
@@ -30,15 +29,18 @@ export class ImageGalleryItem extends Component {
   closeModal = () => this.setState({ isOpenModal: false });
 
   render() {
+    const { webformatURL, tags, largeImageURL } = this.props.unit;
     return (
       <div>
-        <ImageGalleryItemImage onClick={this.openModal} />
+        <ImageGalleryItemImage src={webformatURL} onClick={this.openModal} />
         <Modal
           isOpen={this.state.isOpenModal}
           onRequestClose={this.closeModal}
           style={customStyles}
           contentLabel="Example Modal"
-        ></Modal>
+        >
+          <img src={largeImageURL} alt={tags} />
+        </Modal>
       </div>
     );
   }

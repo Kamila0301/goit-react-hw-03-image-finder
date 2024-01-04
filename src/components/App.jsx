@@ -75,6 +75,7 @@ export class App extends Component {
         <Searchbar onSubmit={this.handleSubmit} />
         {loading && <Loader />}
         {images.length > 0 && <ImageGallery imageItems={images} />}
+
         {images.length > 0 && (
           <Button onClick={this.handleLoadMore}>Load More</Button>
         )}

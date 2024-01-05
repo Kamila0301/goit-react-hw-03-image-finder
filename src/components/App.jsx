@@ -13,6 +13,8 @@ export class App extends Component {
     images: [],
     page: 1,
     loading: false,
+    isLoadMore: false,
+    error: null,
   };
 
   changeQuery = newQuery => {
@@ -20,6 +22,8 @@ export class App extends Component {
       query: `${Date.now()}/${newQuery}`,
       images: [],
       page: 1,
+      loading: false,
+      isLoadMore: false,
     });
   };
 
@@ -33,22 +37,24 @@ export class App extends Component {
   };
 
   showResult = async () => {
-    const searchQuery = this.state.query;
-    const nexPage = this.state.page;
+    const { query, page } = this.state;
+    const divided = query.split('/')[1];
 
     try {
       this.setState({ loading: true });
-      const image = await fetchItems(searchQuery, nexPage);
-      if (image.length) {
-        this.setState(prevState => ({
-          images: nexPage > 1 ? [...prevState.images, ...image] : image,
-        }));
-        this.setState({ loading: false });
-      } else {
-        Notiflix.Notify.failure('Вибачте, щось пішло не так, спробуйте ще раз');
-        this.setState({ loading: false });
-      }
+      const { hits, totalHits } = await fetchItems({
+        query: divided,
+        page,
+      });
+      this.setState(prevState => ({
+        images: [...prevState.images, ...hits],
+        isLoadMore: prevState.images.length + hits.length >= totalHits,
+        error: null,
+      }));
     } catch (error) {
+      Notiflix.Notify.info('Вибачте щось пішло не так, спробуйте ще раз');
+      return;
+    } finally {
       this.setState({ loading: false });
     }
   };
@@ -56,7 +62,7 @@ export class App extends Component {
   handleSubmit = event => {
     event.preventDefault();
 
-    if (event.target.elements.query.value.trim() === '') {
+    if (this.state.query.trim() !== '') {
       Notiflix.Notify.info('Введіть, будь ласка, пошукове слово');
       return;
     }
@@ -69,14 +75,14 @@ export class App extends Component {
   };
 
   render() {
-    const { loading, images } = this.state;
+    const { loading, images, isLoadMore } = this.state;
     return (
       <AppStyle>
         <Searchbar onSubmit={this.handleSubmit} />
-        {loading && <Loader />}
-        {images.length > 0 && <ImageGallery imageItems={images} />}
 
-        {images.length > 0 && (
+        {images.length > 0 && <ImageGallery imageItems={images} />}
+        {loading && <Loader />}
+        {images.length > 0 && !loading && !isLoadMore && (
           <Button onClick={this.handleLoadMore}>Load More</Button>
         )}
       </AppStyle>

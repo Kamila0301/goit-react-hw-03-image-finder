@@ -1,21 +1,25 @@
 import axios from 'axios';
 
 const API_KEY = '14666416-80cfd455e5c85d3a2f8572fbd';
-const BASE_URL = `https://pixabay.com/api/`;
+axios.defaults.baseURL = `https://pixabay.com/api/`;
 
-export async function fetchItems({ query, page }) {
-  const params = new URLSearchParams({
-    key: API_KEY,
-    q: query,
-    image_type: 'photo',
-    orientation: 'horizontal',
-    page: page,
-    per_page: 12,
-  });
+export const fetchItems = async (query, page) => {
+  const divided = query.split('/');
+  const dividedQuery = divided[1];
+
   try {
-    const response = await axios.get(`${BASE_URL}?${params}`);
-    return response.data;
+    const response = await axios.get('', {
+      params: {
+        key: API_KEY,
+        q: dividedQuery,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        page: page,
+        per_page: 12,
+      },
+    });
+    return response.data.hits;
   } catch (error) {
-    return [];
+    throw error;
   }
-}
+};

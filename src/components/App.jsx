@@ -13,8 +13,6 @@ export class App extends Component {
     images: [],
     page: 1,
     loading: false,
-    isLoadMore: false,
-    error: null,
   };
 
   changeQuery = newQuery => {
@@ -22,8 +20,6 @@ export class App extends Component {
       query: `${Date.now()}/${newQuery}`,
       images: [],
       page: 1,
-      loading: false,
-      isLoadMore: false,
     });
   };
 
@@ -37,24 +33,22 @@ export class App extends Component {
   };
 
   showResult = async () => {
-    const { query, page } = this.state;
-    const divided = query.split('/')[1];
+    const searchQuery = this.state.query;
+    const nexPage = this.state.page;
 
     try {
       this.setState({ loading: true });
-      const { hits, totalHits } = await fetchItems({
-        query: divided,
-        page,
-      });
-      this.setState(prevState => ({
-        images: [...prevState.images, ...hits],
-        isLoadMore: prevState.images.length + hits.length >= totalHits,
-        error: null,
-      }));
+      const image = await fetchItems(searchQuery, nexPage);
+      if (image.length) {
+        this.setState(prevState => ({
+          images: nexPage > 1 ? [...prevState.images, ...image] : image,
+        }));
+        this.setState({ loading: false });
+      } else {
+        Notiflix.Notify.failure('Вибачте, щось пішло не так, спробуйте ще раз');
+        this.setState({ loading: false });
+      }
     } catch (error) {
-      Notiflix.Notify.info('Вибачте щось пішло не так, спробуйте ще раз');
-      return;
-    } finally {
       this.setState({ loading: false });
     }
   };
@@ -75,14 +69,14 @@ export class App extends Component {
   };
 
   render() {
-    const { loading, images, isLoadMore } = this.state;
+    const { loading, images } = this.state;
     return (
       <AppStyle>
         <Searchbar onSubmit={this.handleSubmit} />
 
         {images.length > 0 && <ImageGallery imageItems={images} />}
         {loading && <Loader />}
-        {images.length > 0 && !loading && !isLoadMore && (
+        {images.length > 0 && !loading && (
           <Button onClick={this.handleLoadMore}>Load More</Button>
         )}
       </AppStyle>

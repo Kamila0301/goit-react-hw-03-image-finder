@@ -29,10 +29,15 @@ export class ImageGalleryItem extends Component {
   closeModal = () => this.setState({ isOpenModal: false });
 
   render() {
-    const { webformatURL, tags, largeImageURL } = this.props.unit;
+    const { webformatURL, tags, largeImageURL } = this.props.item;
     return (
       <div>
-        <ImageGalleryItemImage src={webformatURL} onClick={this.openModal} />
+        <ImageGalleryItemImage
+          src={webformatURL}
+          onClick={this.openModal}
+          alt={tags}
+          load="lazy"
+        />
         <Modal
           isOpen={this.state.isOpenModal}
           onRequestClose={this.closeModal}

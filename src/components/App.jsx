@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import Notiflix from 'notiflix';
 import { fetchItems } from 'api';
 import { Loader } from './Loader/Loader';
@@ -41,7 +41,7 @@ export class App extends Component {
       const image = await fetchItems(searchQuery, nexPage);
       if (image.length) {
         this.setState(prevState => ({
-          images: nexPage > 1 ? [...prevState.images, ...image] : image,
+          images: this.state.page > 1 ? [...prevState.images, ...image] : image,
         }));
         this.setState({ loading: false });
       } else {
@@ -56,7 +56,7 @@ export class App extends Component {
   handleSubmit = event => {
     event.preventDefault();
 
-    if (this.state.query.trim() !== '') {
+    if (event.target.elements.query.value.trim() === '') {
       Notiflix.Notify.info('Введіть, будь ласка, пошукове слово');
       return;
     }

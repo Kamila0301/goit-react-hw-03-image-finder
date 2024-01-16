@@ -7,7 +7,7 @@ export const ImageGallery = ({ imageItems }) => {
       <ImageGalleryDiv>
         {imageItems.map(item => (
           <ImageGalleryItemStyled key={item.id}>
-            <ImageGalleryItem unit={item} />
+            <ImageGalleryItem item={item} />
           </ImageGalleryItemStyled>
         ))}
       </ImageGalleryDiv>
